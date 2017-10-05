@@ -7,43 +7,44 @@ const toggle = player.querySelector(".toggle");
 const skipButtons = player.querySelectorAll("[data-skip]");
 const ranges = player.querySelectorAll("player__slider");
 
-
 // Build our function
 
 function togglePlay() {
-    if(video.paused) {
-        video.play();
-    } else {
-        video.pause();
-    }
+	if (video.paused) {
+		//Paused is something that lives with the video element, be cautious there is now isplaying or something like that
+		video.play();
+	} else {
+		video.pause();
+	}
 }
 
 function updateButton() {
-    // we can use this since we call it on the video
-     const icon = this.paused ? '►' : '❚ ❚';
-     toggle.textContent = icon;
+	// we can use this since we call it on the video
+	const icon = this.paused ? "►" : "❚ ❚";
+	toggle.textContent = icon;
 }
 
 function skip() {
-    video.currentTime += parseFloat(this.dataset.skip);
+	video.currentTime += parseFloat(this.dataset.skip);
 }
 
 function handleRangeUpdate() {
-    video[this.name] = this.value;
-
+	video[this.name] = this.value;
 }
 
 function handleProgress() {
-    // basically we update the flex-basis value
-    const percent = (video.currentTime / video.duration) * 100;
-    // be careful with flexBasis!!!
-    progressBar.style.flexBasis = percent + "%";
+	// basically we update the flex-basis value
+	const percent = video.currentTime / video.duration * 100; //currentTime and duration are properties always available to the video component
+
+	// be careful with flexBasis!!!
+	progressBar.style.flexBasis = percent + "%";
 }
 
 function scrub(e) {
-    // we click inside the element and then offsetX shows the distance from left of the progressbar
-    const scrubTime = (e.offsetX / progress.offsetWidth) * video.duration;
-    video.currentTime = scrubTime;
+	// we click inside the element and then offsetX shows the distance from left of the progressbar
+	const scrubTime = e.offsetX / progress.offsetWidth * video.duration; //e.offset gives the value how far is the click inside that actual element
+
+	video.currentTime = scrubTime;
 }
 
 // Hook up event listeners
@@ -53,16 +54,16 @@ video.addEventListener("pause", updateButton);
 video.addEventListener("timeupdate", handleProgress);
 
 toggle.addEventListener("click", togglePlay);
-skipButtons.forEach(button => button.addEventListener('click', skip));
+skipButtons.forEach(button => button.addEventListener("click", skip));
 ranges.forEach(range => range.addEventListener("change", handleRangeUpdate));
 ranges.forEach(range => range.addEventListener("mousemove", handleRangeUpdate));
 
 let mouseDown = false;
 progress.addEventListener("click", scrub);
 progress.addEventListener("mousemove", () => {
-    if(mouseDown) {
-        scrub();
-    }
+	if (mouseDown) {
+		scrub();
+	}
 });
-progress.addEventListener("mousedown", () => mouseDown = true);
-progress.addEventListener("mouseup", () => mouseDown = false);
+progress.addEventListener("mousedown", () => (mouseDown = true));
+progress.addEventListener("mouseup", () => (mouseDown = false));
